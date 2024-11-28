@@ -1,0 +1,20 @@
+---
+- hosts: web
+  tasks:
+  - name: Make sure deploy can run user services
+    ansible.builtin.file:
+      path: /var/lib/systemd/linger/deploy
+      state: touch
+    become: true
+  - name: Reload systemd when files have changed
+    ansible.builtin.systemd:
+      daemon_reload: true
+      scope: user # deploy user's services
+    become: false # run as deploy, not as root
+  - name: Ensure visitor app is started
+    ansible.builtin.systemd:
+      name: visitor
+      state: started
+      enabled: true
+      scope: user
+    become: false # run as deploy, not as root

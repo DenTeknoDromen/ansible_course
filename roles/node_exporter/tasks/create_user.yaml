@@ -1,0 +1,7 @@
+---
+- name: Create a new user for node_exporter service
+  ansible.builtin.user:
+    name: "node_exporter"
+    create_home: false
+    shell: "/sbin/nologin"
+    system: true

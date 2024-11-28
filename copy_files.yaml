@@ -1,0 +1,20 @@
+---
+- hosts: database
+  vars:
+    destfolder: "/files/"
+  tasks:
+    - name: Copies files to the databas server
+      copy:
+        src: "{{ item }}"
+        dest: "{{ destfolder }}"
+        mode: '0777'
+      with_fileglob:
+        - "files/*.txt"
+
+    - name: Finds contents of dest folder
+      command: "ls -1 {{ destfolder }}"
+      register: dir_output
+
+    - name: Prints content of destfolder
+      debug:
+        msg: "{{ dir_output.stdout_lines }}"

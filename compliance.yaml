@@ -1,0 +1,116 @@
+---
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: Gather facts about services
+      ansible.builtin.service_facts:
+
+    - name: 4.1.2 Ensure a single firewall configuration is  in use
+      ansible.builtin.debug:
+        var: ansible_facts.services["{{ item }}"]["status"]
+      loop:
+        - "firewalld.service"
+        - "nftables.service"
+        - "firewall.service"
+
+    - name: 5.1.20 Ensure sshd PermitRootLogin is disabled
+      ansible.builtin.shell: "sshd -T | grep permitrootlogin"
+      register: ssh_info
+
+    - name: Print output for "sshd -T | grep permitrootlogin"
+      ansible.builtin.debug:
+        var: ssh_info.stdout
+
+    - name: 2.1.20 Ensure X window server services are not in use
+      ansible.builtin.command: "rpm -q xorg-x12-server-common"
+      register: package_info
+      failed_when: package_info.rc >= 2
+
+    - name: Prints output for "rpm -q xorg-x12-server-common"
+      debug:
+        msg: "{{ package_info.stdout }}"
+
+    - name: 2.2.2 Ensure ldap client is not installed
+      ansible.builtin.command: "rpm -q openldap-clients"
+      register: package_info
+      failed_when: package_info.rc >= 2
+
+    - name: Prints output for "rpm -q openldap-clients"
+      debug:
+        msg: "{{ package_info.stdout }}"
+
+    - name: 5.4.3.1 Ensure nologin is not listed in /etc/shells
+      ansible.builtin.shell: "grep -Ps '^\\h*([^#\n\r]+)?\/nologin\b' /etc/shells"
+      register: output
+      failed_when: output.rc > 3
+
+    - name: Print command output
+      ansible.builtin.debug:
+        msg: "Rows in /etc/shells with 'nologin': {{ output.stdout }}"
+     
+    # 3.1.1 Ensure IPv6 status is identified
+    # - name: Ensure jffs3 kernal module is not available
+    #   ansible.builtin.script:
+    #     cmd: "files/check_ipv6_script"
+    #   register: output
+
+    # - name: Print output
+    #   ansible.builtin.debug:
+    #     msg: "{{ output.stdout | split('\n')}}"
+
+    - name: 1.1.2.3.1 Ensure separate partition exists for /home
+      ansible.builtin.command:
+        cmd: "findmnt -kn /home"
+      register: output
+      failed_when: output.rc >= 2
+
+    - name: Print output
+      ansible.builtin.debug:
+        msg: "Mountpoint for /home: {{ output.stdout }}"
+
+    - name: 1.4.2 Ensure access to bootloader config is configured
+      ansible.builtin.command:
+        cmd: "find /boot/efi/EFI/ -printf ' %P| %m| %u| %g |\n'"
+      register: output
+
+    - name: Print output
+      ansible.builtin.debug:
+        msg: "{{ output.stdout | split('\n')}}"
+
+    - name: 2.1.7. Ensure ftp server services are not in use
+      ansible.builtin.command: "rpm -q vsftpd"
+      register: package_info
+      failed_when: package_info.rc >= 2
+
+    - name: Prints output
+      debug:
+        msg: "{{ package_info.stdout }}"
+
+    # - name: Ensure GPG keys are configured
+    #   ansible.builtin.shell: "grep -r gpgkey /etc/yum.repos.d/* /etc/dnf/dnf.conf"
+    #   register: output
+    #   failed_when: output.rc > 2
+
+    # - name: Print output
+    #   ansible.builtin.debug:
+    #     msg: "{{ output.stdout }}"
+
+    - name: 2.1.22 Ensure only approved services are listening on a network interface
+      ansible.builtin.command:
+        cmd: "ss -plntu"
+      register: output
+      failed_when: output.rc > 2
+
+    - name: Print output for "ss -plntu"
+      ansible.builtin.debug:
+        msg: "{{ output.stdout | split('\n') }}"
+
+    - name: 2.3.1 Ensure time synchronization is in use
+      ansible.builtin.command:
+        cmd: "rpm -q chrony"
+      register: output
+      failed_when: output.rc > 2
+
+    - name: Print output for "rpm -q chrony"
+      ansible.builtin.debug:
+        msg: "{{ output.stdout }}"

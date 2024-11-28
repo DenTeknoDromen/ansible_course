@@ -1,0 +1,63 @@
+---
+- hosts: web
+  tasks:
+    - name: Make sure the latest version of Apache is installed
+      package:
+        name: httpd
+        state: latest
+
+    - name: Start Apache at boot
+      service:
+        name: httpd
+        enabled: yes
+        state: started
+
+    - name: ensure Extra Packages for Enterprise Linux repo is installed
+      ansible.builtin.package:
+        name: epel-release
+        state: installed
+
+    - name: ensure imaging library is installed
+      ansible.builtin.package:
+        name: python3-pillow
+        state: installed
+
+    - name: ensure hash pic is up to date with index
+      devops.example.hash_pic:
+        filename: "/var/www/example.org/image.png"
+        size: 1024
+        path: "/var/www/example.org/index.html"
+      notify:
+        - Restart apache
+
+    - name: Define a vhost.
+      ansible.builtin.template:
+        src: "templates/my_vhost.conf"
+        dest: "/etc/httpd/conf.d/my_vhost.conf"
+      notify:
+        - Restart apache
+
+    - name: Define a second vhost.
+      ansible.builtin.copy:
+        src: "files/visitor.conf"
+        dest: "/etc/httpd/conf.d/visitor.conf"
+      notify:
+        - Restart apache        
+
+    - name: Create new folder in /var/www/example.org
+      file:
+        name: "/var/www/example.org"
+        state: directory
+        owner: "apache"
+        group: "apache"
+
+    - name: Create new index file
+      copy:
+        src: "files/index.html"
+        dest: "/var/www/example.org"
+
+  handlers:
+    - name: Restart apache
+      ansible.builtin.service:
+        name: httpd
+        state: restarted

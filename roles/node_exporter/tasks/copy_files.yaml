@@ -1,0 +1,33 @@
+---
+- name: Create folder /etc/sysconfig/node_exporter
+  ansible.builtin.file:
+    path: "/etc/sysconfig/node_exporter"
+    state: "directory"
+  
+- name: Create folder /var/lib/node_exporter/textfile_collector
+  ansible.builtin.file:
+    path: "/var/lib/node_exporter/textfile_collector"
+    owner: "node_exporter"
+    group: "node_exporter"
+    state: "directory"
+
+- name: Copy service and socket files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/systemd/system
+  loop:
+    - node_exporter.service
+    - node_exporter.socket
+
+- name: Copy sysconfig file
+  ansible.builtin.copy:
+    src: "sysconfig.node_exporter"
+    dest: /etc/sysconfig/node_exporter/"
+
+- name: Copy node_exporter binary file
+  ansible.builtin.copy:
+    src: "node_exporter"
+    dest: "/usr/sbin/"
+    mode: +x
+
+

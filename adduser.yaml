@@ -1,0 +1,9 @@
+---
+- hosts: web
+  tasks:
+    - name: Adds new user to the system
+      ansible.builtin.user:
+        name: "{{ item }}"
+        groups: 'wheel'
+        password: "{{ hashed_password }}"
+      loop: "{{ new_users }}"

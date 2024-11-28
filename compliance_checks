@@ -1,0 +1,11 @@
+1)	[KLAR] 4.1.2 Ensure a single firewall configuration is  in use
+2)	[KLAR] 5.1.20 Ensure sshd PermitRootLogin is disabled
+3)	[KLAR] 2.1.20 Ensure X window server services are not in use
+4)	[KLAR] 2.2.2 Ensure ldap client is not installed
+5)	[KLAR] 5.4.3.1 Ensure nologin is not listed in /etc/shells
+6)	1.1.1.5 Ensure jffs2 kerneld module is not available
+
+7)	[KLAR] 1.1.2.3.1 Ensure separate partition exists for /home
+8)	1.2.1.4 Ensure package manager repositories are configured
+9)	[KLAR] 1.4.2 Ensure access to bootloader config is configured
+10)	[KLAR] 2.1.7. Ensure ftp server services are not in use

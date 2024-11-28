@@ -1,0 +1,9 @@
+---
+- name: Create system user
+  import_tasks: create_user.yaml
+
+- name: Configure files
+  import_tasks: copy_files.yaml
+
+- name: Start service
+  import_tasks: start_service.yaml

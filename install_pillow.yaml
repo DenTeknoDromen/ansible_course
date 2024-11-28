@@ -1,0 +1,12 @@
+---
+- hosts: web
+  become: true
+  tasks:
+    - name: ensure Extra Packages for Enterprise Linux repo is installed
+      ansible.builtin.package:
+        name: epel-release
+        state: installed
+    - name: ensure imaging library is installed
+      ansible.builtin.package:
+        name: python3-pillow
+        state: installed

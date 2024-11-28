@@ -1,0 +1,11 @@
+---
+- hosts: all
+  tasks:
+    - name: Set timezone to CET.
+      timezone:
+        name: CET
+
+    - name: Set a hostname
+      hostname:
+        name: "{{ inventory_hostname }}"
+

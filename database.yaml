@@ -1,0 +1,30 @@
+---
+- hosts: vagrant_vms
+  tasks:
+    - name: Make sure that the latest version of MariaDB is installed
+      ansible.builtin.yum:
+        name: mariadb-server
+        state: latest
+    - name: Start mariaDB at boot
+      ansible.builtin.service:
+        name: mariadb
+        enabled: true
+        state: started
+    - name: Make sure the latest version of MySQL-Python is installed
+      ansible.builtin.yum:
+        name: python3-PyMySQL
+        state: latest
+    - name: Create a new user called webappuser
+      community.mysql.mysql_user:
+        check_implicit_admin: true
+        name: "webappuser"
+        host: "example.org"
+        password: '{{ secret_password }}'
+        priv: "*.*:ALL,GRANT"
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+    - name: Create a new database called webappdb
+      community.mysql.mysql_db:
+        name: "webappdb"
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock

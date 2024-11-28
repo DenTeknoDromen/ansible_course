@@ -1,0 +1,19 @@
+---
+- hosts: all
+  gather_facts: false
+  tasks:
+  - name: Update deploy user with password
+    ansible.builtin.user:
+      name: 'deploy'
+      password: "{{ deploy_password }}"
+
+  - name: Update sudoers file with more restircted access
+    ansible.builtin.lineinfile:
+      path: /etc/sudoers.d/deploy
+      search_string: "deploy     ALL=(ALL)     NOPASSWD: ALL"
+      line: "deploy     ALL=(ALL) ALL"
+      owner: root
+      group: root
+      mode: '0644'
+      validate: visudo -cf %s
+      

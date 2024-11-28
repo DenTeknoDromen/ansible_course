@@ -1,0 +1,27 @@
+---
+vagrant_vms:
+  hosts:
+    web:
+      ansible_host: 192.168.121.235
+    database:
+      ansible_host: 192.168.121.62
+  vars:
+    ansible_user: deploy
+    ansible_ssh_private_key_file: ~/.ssh/deploy_key
+    ansible_become: yes
+    ansible_become_user: root
+    ansible_become_method: sudo
+    #ansible_port: "5522"
+    new_users: ['Bert', 'Ernie', 'Cookie-Monster']
+    secret_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          30336265376366303163616362306236633366373737313130376461653436303234623830313030
+          6339376133343335346666333038366237663766306538380a663934313538383262383461333731
+          66646437306530656665363131336264393361306463326365663139343565386239653636323639
+          3735636339643938620a303866306366373837643436316131626135623539353235663033386131
+          3338
+    hashed_password: '$6$fmWAoQlkzgEoeq.H$JN4xYKBdYTbtFl3oTYAjobtvl1XXGNAlIXN3lGfl2MvCI8mhVKXCLS.TzFFM8wNUGg3jz/deO9uX1FR2TLA9P.'
+    deploy_password: '$6$eVSaMzkHJTZkUMCQ$eOY9FT.S/1XoDsSQkHykOgOT1hllaq0.YPvfBthaMqVKpYybjRV0Hf9l.WNt5U5aTR2po/B3zrx0J1EE0jMC31'
+
+
+  

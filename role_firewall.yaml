@@ -1,0 +1,5 @@
+- hosts: all
+  vars_files:
+    - "vars/{{ ansible_hostname }}_vars.yaml"
+  roles:
+    - geerlingguy.firewall

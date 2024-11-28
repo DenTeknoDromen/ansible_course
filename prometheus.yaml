@@ -1,0 +1,47 @@
+---
+- hosts: localhost
+  connection: local
+  vars:
+    prometheus_config:
+      scrape_configs:
+        - job_name: 'prometheus'
+          scrape_interval: 5s
+          static_configs:
+            - targets: ['localhost:9090']
+        - job_name: 'node'
+          static_configs:
+            - targets:
+              - 'node-exporter:9100'
+              - '192.168.121.235:9100'
+              - '192.168.121.62:9100'
+          relabel_configs:
+            - source_labels: [__address__]
+              regex: 'node-exporter:9100'
+              target_label: instance
+              replacement: 'controller'
+
+  tasks:
+
+    - name: Write Prometheus config
+      copy:
+        content: "{{ prometheus_config }}"
+        dest: /tmp/scrape-config.yml
+
+    - name: Ensure Node Exporter container is running
+      docker_container:
+        name: node-exporter
+        image: prom/node-exporter
+      become: True
+
+    - name: Ensure Prometheus container is running
+      docker_container:
+        name: prometheus
+        image: prom/prometheus
+        links:
+          - "node-exporter:node"
+        volumes:
+          - "/tmp/scrape-config.yml:/etc/prometheus/prometheus.yml"
+          - "prometheus_data:/data"
+        ports:
+         - "9090:9090"
+      become: True

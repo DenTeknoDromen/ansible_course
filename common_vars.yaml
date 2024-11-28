@@ -1,0 +1,24 @@
+---
+firewall_allowed_tcp_ports:
+  - "22"
+  - "5522"
+
+firewall_forwarded_tcp_ports:
+  - { src: "5522", dest: "22" }  
+  
+firewall_additional_rules:
+  - "iptables -A INPUT -p tcp -s 192.168.121.0/24 --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT"
+  - "iptables -A OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT"
+
+firewall_enable_ipv6: false
+
+# Set to true to ensure other firewall management software is disabled.
+firewall_disable_firewalld: true
+firewall_disable_ufw: false
+
+# Portforward 5522 > 22 på alla maskiner
+# Port 443 och 80 öppna på webserver
+# Portforward 5506 > 3306
+
+# Stäng av ipv6 eftersom vi inte använder det
+# Disable firewalld för att hindra dubbla brandväggar
